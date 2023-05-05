@@ -21,6 +21,7 @@ def lasso(data):
     learning_rate = 1e-12
     max_iter = 100000
     alpha = 0.1
+    tol = 1e-4
     n, m = X.shape
     X = np.c_[np.ones(n), X]
     w = np.zeros(m + 1)
