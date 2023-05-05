@@ -9,10 +9,41 @@ except ImportError as e:
     import numpy as np
 
 def ridge(data):
-    pass
+    X, y = read_data()
+    alpha = 0.1
+    X_T = np.transpose(X)
+    n = X.shape[1]
+    beta = np.linalg.inv(X_T @ X + alpha * np.identity(n)) @ X_T @ y
+    return X @ beta
     
 def lasso(data):
-    pass
+    X, y = read_data()
+    learning_rate = 1e-12
+    max_iter = 100000
+    alpha = 0.1
+    n, m = X.shape
+    X = np.c_[np.ones(n), X]
+    w = np.zeros(m + 1)
+    for i in range(max_iter):
+        w_old = w.copy()
+        for j in range(m + 1):
+            if j == 0:
+                w[j] = w[j] - (learning_rate / n) * sum(X @ w - y)
+            else:
+                a = 2 * (X[:, j] ** 2).sum()
+                b = 2 * (X[:, j] * (X @ w - y)).sum()
+                if b < -alpha:
+                    w[j] = (b + alpha) / a
+                elif b > alpha:
+                    w[j] = (b - alpha) / a
+                else:
+                    w[j] = 0
+
+        if np.linalg.norm(w - w_old) < tol:
+            break
+    n = X.shape[0]
+    X = np.c_[np.ones(n), X]
+    return X @ w
 
 def read_data(path='./data/exp02/'):
     x = np.load(path + 'X_train.npy')
