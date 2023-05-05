@@ -22,6 +22,8 @@ def lasso(data):
     max_iter = 100000
     alpha = 0.1
     tol = 1e-4
+    n1 = X.shape[0]
+    X1 = np.c_[np.ones(n1), X]
     n, m = X.shape
     X = np.c_[np.ones(n), X]
     w = np.zeros(m + 1)
@@ -42,9 +44,7 @@ def lasso(data):
 
         if np.linalg.norm(w - w_old) < tol:
             break
-    n = X.shape[0]
-    X = np.c_[np.ones(n), X]
-    return X @ w
+    return X1 @ w
 
 def read_data(path='./data/exp02/'):
     x = np.load(path + 'X_train.npy')
