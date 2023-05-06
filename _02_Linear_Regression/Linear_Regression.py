@@ -18,32 +18,22 @@ def ridge(data):
     
 def lasso(data):
     X, y = read_data()
-    learning_rate = 0.01
-    max_iter = 1000
-    alpha = 0.5
-    tol = 1e-4
-    n, m = X.shape
-    X = np.c_[np.ones(n), X]
-    w = np.zeros(m + 1)
+    learning_rate = 1e-10
+    max_iter = 10000
+    alpha = 0.1
+    n_samples, n_features = X.shape
+    w = np.zeros(n_features)
+    b = 0
+    # 梯度下降迭代
     for i in range(max_iter):
-        w_old = w.copy()
-        for j in range(m + 1):
-            if j == 0:
-                w[j] = w[j] - (learning_rate / n) * sum(X @ w - y)
-            else:
-                a = 2 * (X[:, j] ** 2).sum()
-                b = 2 * (X[:, j] * (X @ w - y)).sum()
-                if b < -alpha:
-                    w[j] = (b + alpha) / a
-                elif b > alpha:
-                    w[j] = (b - alpha) / a
-                else:
-                    w[j] = 0
-
-        if np.linalg.norm(w - w_old) < tol:
-            break
-    X1 = np.append(1, data)
-    return X1 @ w
+        y_pred = np.dot(X, w) + b
+        dw_reg = alpha * np.sign(w)
+        residuals = y - y_pred
+        dw = (-2/n_samples) * np.dot(X.T, residuals) + dw_reg
+        db = (-2/n_samples) * np.sum(residuals)
+        w -= learning_rate * dw
+        b -= learning_rate * db
+    return np.dot(data, w) + b
 
 def read_data(path='./data/exp02/'):
     x = np.load(path + 'X_train.npy')
