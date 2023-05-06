@@ -38,7 +38,7 @@ def lasso(data):
         w -= learning_rate * dw
         b -= learning_rate * db
     # 返回预测值
-    return np.dot(X, w) + b
+    return np.dot(data, w) + b
 
 def read_data(path='./data/exp02/'):
     x = np.load(path + 'X_train.npy')
