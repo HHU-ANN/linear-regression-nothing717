@@ -10,41 +10,19 @@ except ImportError as e:
 
 def ridge(data):
     X, y = read_data()
-    alpha = 0.1
-    X_T = np.transpose(X)
-    n = X.shape[1]
-    beta = np.linalg.inv(X_T @ X + alpha * np.identity(n)) @ X_T @ y
-    return X @ beta
+    weight = np.matmul(np.linalg.inv(np.matmul(X.T, X)), np.matmul(X.T, y))
+    return weight @ data
     
 def lasso(data):
-    X, y = read_data()
-    learning_rate = 1e-12
-    max_iter = 100000
+    learning_rate = 1e-10
+    max_iter = 10000
     alpha = 0.1
-    tol = 1e-4
-    n1 = X.shape[0]
-    X1 = np.c_[np.ones(n1), X]
-    n, m = X.shape
-    X = np.c_[np.ones(n), X]
-    w = np.zeros(m + 1)
+    X, y = read_data()
+    weight = np.zeros(X.shape[1])
     for i in range(max_iter):
-        w_old = w.copy()
-        for j in range(m + 1):
-            if j == 0:
-                w[j] = w[j] - (learning_rate / n) * sum(X @ w - y)
-            else:
-                a = 2 * (X[:, j] ** 2).sum()
-                b = 2 * (X[:, j] * (X @ w - y)).sum()
-                if b < -alpha:
-                    w[j] = (b + alpha) / a
-                elif b > alpha:
-                    w[j] = (b - alpha) / a
-                else:
-                    w[j] = 0
-
-        if np.linalg.norm(w - w_old) < tol:
-            break
-    return X1 @ w
+        gradient = np.dot(X.T, (np.dot(X, weight) - y)) + alpha * np.sign(weight)
+        weight =weight - learning_rate * gradient
+    return weight @ data
 
 def read_data(path='./data/exp02/'):
     x = np.load(path + 'X_train.npy')
