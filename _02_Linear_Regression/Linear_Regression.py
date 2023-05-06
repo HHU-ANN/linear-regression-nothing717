@@ -42,8 +42,7 @@ def lasso(data):
 
         if np.linalg.norm(w - w_old) < tol:
             break
-    n1 = data.shape[0]
-    X1 = np.c_[np.ones(n1), data]
+    X1 = np.append(1, data)
     return X1 @ w
 
 def read_data(path='./data/exp02/'):
