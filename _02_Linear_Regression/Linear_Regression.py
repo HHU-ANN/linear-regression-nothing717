@@ -18,9 +18,9 @@ def ridge(data):
     
 def lasso(data):
     X, y = read_data()
-    learning_rate = 1e-12
-    max_iter = 100000
-    alpha = 0.1
+    learning_rate = 0.01
+    max_iter = 1000
+    alpha = 0.5
     tol = 1e-4
     n, m = X.shape
     X = np.c_[np.ones(n), X]
