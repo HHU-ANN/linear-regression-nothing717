@@ -18,8 +18,8 @@ def ridge(data):
     
 def lasso(data):
     X, y = read_data()
-    learning_rate = 0.01
-    max_iter = 1000
+    learning_rate = 1e-10
+    max_iter = 10000
     alpha = 0.1
     n_samples, n_features = X.shape
     #初始化参数
