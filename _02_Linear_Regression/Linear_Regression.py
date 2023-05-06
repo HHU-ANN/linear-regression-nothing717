@@ -21,11 +21,30 @@ def lasso(data):
     learning_rate = 1e-12
     max_iter = 100000
     alpha = 0.1
-    w = np.zeros(X.shape[1])
+    tol = 1e-4
+    n, m = X.shape
+    X = np.c_[np.ones(n), X]
+    w = np.zeros(m + 1)
     for i in range(max_iter):
-        grad = np.dot(X.T, (np.dot(X, w) - y)) + alpha * np.sign(w)
-        w =w - learning_rate * grad
-    return w @ data
+        w_old = w.copy()
+        for j in range(m + 1):
+            if j == 0:
+                w[j] = w[j] - (learning_rate / n) * sum(X @ w - y)
+            else:
+                a = 2 * (X[:, j] ** 2).sum()
+                b = 2 * (X[:, j] * (X @ w - y)).sum()
+                if b < -alpha:
+                    w[j] = (b + alpha) / a
+                elif b > alpha:
+                    w[j] = (b - alpha) / a
+                else:
+                    w[j] = 0
+
+        if np.linalg.norm(w - w_old) < tol:
+            break
+    n1 = data.shape[0]
+    X1 = np.c_[np.ones(n1), data]
+    return X1 @ w
 
 def read_data(path='./data/exp02/'):
     x = np.load(path + 'X_train.npy')
